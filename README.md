@@ -38,8 +38,8 @@ Dashboard interactivo para visualizar y analizar citas de personajes famosos ext
 
 1. **Clona el repositorio**
 ```bash
-git clone https://github.com/tu-usuario/quotes-dashboard.git
-cd quotes-dashboard
+git clone https://github.com/RualGF/Prueba-de-WebScraping.git
+cd '.\Prueba de WebScraping\'
 ```
 
 2. **Crea un entorno virtual (recomendado)**
