@@ -119,7 +119,9 @@ app.layout = dbc.Container([
                         value='all',
                         placeholder='Selecciona un autor',
                         clearable=False,
-                        className='mb-3'
+                        className='mb-3',
+                        style={'color': '#333', 'backgroundColor': 'white'},
+                        optionHeight=35
                     ),
                     
                     html.Label("Etiqueta:", className="fw-bold"),
@@ -130,7 +132,9 @@ app.layout = dbc.Container([
                         value='all',
                         placeholder='Selecciona una etiqueta',
                         clearable=False,
-                        className='mb-3'
+                        className='mb-3',
+                        style={'color': '#333', 'backgroundColor': 'white'},
+                        optionHeight=35
                     ),
                 ])
             ], style=ESTILO_TARJETA)
