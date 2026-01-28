@@ -29,6 +29,14 @@ Dashboard interactivo para visualizar y analizar citas de personajes famosos ext
 - **Dash** - Framework para dashboards
 - **Dash Bootstrap Components** - Componentes UI
 
+## :construction: Retos técnicos y decisiones de diseño
+
+1. **Lógica de Scraping:** Implementé un bucle de extracción basado en la presencia del elemento "Next" en el HTML. El script no se detiene por un número fijo de páginas, sino que detecta dinámicamente el final de la colección, lo que lo hace escalable si la web añade más citas.
+
+2. **Transformación de Datos:** Para el gráfico de distribución histórica, desarrollé una lógica de conversión que extrae el año de nacimiento de la biografía del autor, calcula el siglo correspondiente y lo traduce a nomenclatura de los siglos en español basado en números romanos, asegurando una visualización académica y profesional.
+
+3. **Arquitectura de Datos:** Opté por un sistema de guardado dual. Utilizo archivos Pickle (.pkl) para mantener la integridad de los tipos de datos de Python (listas de etiquetas) para el Dashboard, y CSV para garantizar la portabilidad y facilitar el análisis externo en herramientas como Excel o Power BI.
+
 ## 📋 Requisitos previos
 
 - Python 3.8 o superior
