@@ -29,7 +29,7 @@ Dashboard interactivo para visualizar y analizar citas de personajes famosos ext
 - **Dash** - Framework para dashboards
 - **Dash Bootstrap Components** - Componentes UI
 
-## :construction: Retos técnicos y decisiones de diseño
+## 🧩Retos técnicos y decisiones de diseño
 
 1. **Lógica de Scraping:** Implementé un bucle de extracción basado en la presencia del elemento "Next" en el HTML. El script no se detiene por un número fijo de páginas, sino que detecta dinámicamente el final de la colección, lo que lo hace escalable si la web añade más citas.
 
@@ -55,7 +55,7 @@ cd '.\Prueba de WebScraping\'
 python -m venv .venv
 
 # En Windows
-.venv\Scripts\activate
+.venv/Scripts/activate
 
 # En Linux/Mac
 source .venv/bin/activate
