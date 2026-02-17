@@ -1,0 +1,18 @@
+services:
+  # SERVICIO 1: EL SCRAPER
+  scraper:
+    build: 
+      context: .
+      dockerfile: scraper/Dockerfile
+    volumes:
+      - ./data:/app/data  # Carpeta compartida para el CSV y el PKL
+
+  # SERVICIO 2: EL DASHBOARD
+  dashboard:
+    build: 
+      context: .
+      dockerfile: dashboard/Dockerfile
+    ports:
+      - "8050:8050"       # Puerto para ver Plotly Dash en tu navegador
+    volumes:
+      - ./data:/app/data  # Lee los archivos que genera el scraper
