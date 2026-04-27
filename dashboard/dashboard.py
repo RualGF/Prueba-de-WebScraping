@@ -1,28 +1,48 @@
+import json
 import os
-
+from pathlib import Path
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import sqlite3
+
 from dash import Dash, Input, Output, dcc, html
+
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+DEFAULT_DATA_DIR = SCRIPT_DIR.parent / "data"
+DATA_DIR = Path(os.getenv("DATA_DIR", DEFAULT_DATA_DIR))
+SQLITE_PATH = DATA_DIR / "quotes.db"
 
 # ==================== CARGAR DATOS ====================
 print("=" * 60)
 print("📊 CARGANDO DATOS PARA EL DASHBOARD")
 print("=" * 60)
 
-if not os.path.exists("data/quotes_data.pkl"):
-    print("\n❌ ERROR: No se encontró el archivo '/app/data/quotes_data.pkl'")
-    print("👉 Por favor, ejecuta primero 'scraping.py' para obtener los datos.")
-    print("=" * 60)
-    exit()
+# Cargamos la tabla sqlite en el dataframe
+conn = sqlite3.connect(SQLITE_PATH)
 
-try:
-    df = pd.read_pickle("data/quotes_data.pkl")
-    print(f"✓ Cargadas {len(df)} citas correctamente")
-except Exception as e:
-    print(f"\n❌ Error al cargar los datos: {e}")
-    exit()
+df = pd.read_sql("SELECT * FROM quotes", conn)
+
+conn.close()
+
+df["tags"] = df["tags"].apply(json.loads)
+df["author_birthdate"] = pd.to_datetime(df["author_birthdate"])
+
+# Como alternativa se puede hacer con el archivo pkl
+# if not (DATA_DIR / "quotes_data.pkl").exists():
+#     print("\n❌ ERROR: No se encontró el archivo '/app/data/quotes_data.pkl'")
+#     print("👉 Por favor, ejecuta primero 'scraping.py' para obtener los datos.")
+#     print("=" * 60)
+#     exit()
+
+# try:
+#     df = pd.read_pickle(DATA_DIR / "quotes_data.pkl")
+#     print(f"✓ Cargadas {len(df)} citas correctamente")
+# except Exception as e:
+#     print(f"\n❌ Error al cargar los datos: {e}")
+#     exit()
 
 # ==================== PREPARAR DATOS ====================
 # Explotar tags para análisis
@@ -468,6 +488,9 @@ def actualizar_dashboard(texto_busqueda, autor_seleccionado, etiqueta_selecciona
             margin=dict(l=0, r=0, t=0, b=0),
             yaxis={"categoryorder": "total ascending"},
         )
+        fig_autores.update_traces(
+            hovertemplate="Autor: %{y}<br>Numero de citas: %{x}<extra></extra>"
+        )
     else:
         fig_autores = go.Figure()
         fig_autores.add_annotation(
@@ -504,6 +527,9 @@ def actualizar_dashboard(texto_busqueda, autor_seleccionado, etiqueta_selecciona
                 margin=dict(l=0, r=0, t=0, b=0),
                 xaxis={"tickangle": -45},
             )
+            fig_etiquetas.update_traces(
+                hovertemplate="Etiqueta: %{x}<br>Frecuencia: %{y}<extra></extra>"
+            )
         else:
             fig_etiquetas = go.Figure()
             fig_etiquetas.add_annotation(
@@ -537,6 +563,13 @@ def actualizar_dashboard(texto_busqueda, autor_seleccionado, etiqueta_selecciona
             color_discrete_sequence=px.colors.sequential.RdBu,
         )
         fig_siglos.update_layout(height=400, margin=dict(l=0, r=0, t=0, b=0))
+        fig_siglos.update_traces(
+            hovertemplate=(
+                "Siglo: %{label}<br>"
+                "Autores: %{value}<br>"
+                "Porcentaje: %{percent}<extra></extra>"
+            )
+        )
     else:
         fig_siglos = go.Figure()
         fig_siglos.add_annotation(

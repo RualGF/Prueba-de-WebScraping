@@ -1,18 +1,25 @@
 services:
   # SERVICIO 1: EL SCRAPER
   scraper:
-    build: 
+    build:
       context: .
       dockerfile: scraper/Dockerfile
+    environment:
+      DATA_DIR: /app/data
     volumes:
-      - ./data:/app/data  # Carpeta compartida para el CSV y el PKL
+      - ./data:/app/data # Carpeta compartida para el DB, CSV y el PKL
 
   # SERVICIO 2: EL DASHBOARD
   dashboard:
-    build: 
+    depends_on:
+      scraper:
+        condition: service_completed_successfully
+    build:
       context: .
       dockerfile: dashboard/Dockerfile
+    environment:
+      DATA_DIR: /app/data
     ports:
-      - "8050:8050"       # Puerto para ver Plotly Dash en tu navegador
+      - "8050:8050" # Puerto para ver Plotly Dash en tu navegador
     volumes:
-      - ./data:/app/data  # Lee los archivos que genera el scraper
+      - ./data:/app/data # Lee los archivos que genera el scraper

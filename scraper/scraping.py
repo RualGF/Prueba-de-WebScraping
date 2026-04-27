@@ -1,7 +1,20 @@
+import json
+import os
+from pathlib import Path
+
 import pandas as pd
 import requests
+import sqlite3
 from bs4 import BeautifulSoup
 from datetime import datetime as dt
+
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+DEFAULT_DATA_DIR = SCRIPT_DIR.parent / "data"
+DATA_DIR = Path(os.getenv("DATA_DIR", DEFAULT_DATA_DIR))
+PICKLE_PATH = DATA_DIR / "quotes_data.pkl"
+CSV_PATH = DATA_DIR / "quotes_data.csv"
+SQLITE_PATH = DATA_DIR / "quotes.db"
 
 
 def extraer_citas():
@@ -59,9 +72,20 @@ def extraer_citas():
     # Crear DataFrame
     df = pd.DataFrame(lista)
 
-    # Guardar datos
-    df.to_pickle("/app/data/quotes_data.pkl")
-    df.to_csv("/app/data/quotes_data.csv", index=False, encoding="utf-8")
+    # Guardar datos en archivos
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    df.to_pickle(PICKLE_PATH)
+    df.to_csv(CSV_PATH, index=False, encoding="utf-8")
+
+    # Guardar datos en SQLite
+    df_sqlite = df.copy()
+    df_sqlite["tags"] = df_sqlite["tags"].apply(json.dumps)
+
+    conn = sqlite3.connect(SQLITE_PATH)
+
+    df_sqlite.to_sql("quotes", conn, if_exists="replace", index=False)
+
+    conn.close()
 
     print("\n" + "=" * 60)
     print("✅ SCRAPING COMPLETADO")
@@ -76,6 +100,7 @@ def extraer_citas():
     print(f"\n💾 Datos guardados en:")
     print(f"   - quotes_data.pkl (para el dashboard)")
     print(f"   - quotes_data.csv (para análisis externo)")
+    print(f"   - tabla SQLite (como alternativa)")
     print("=" * 60)
 
     return df
