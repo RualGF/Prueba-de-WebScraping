@@ -1,23 +1,24 @@
+import os
+
+import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from dash import Dash, html, dcc, Input, Output
-import dash_bootstrap_components as dbc
-import os
+from dash import Dash, Input, Output, dcc, html
 
 # ==================== CARGAR DATOS ====================
 print("=" * 60)
 print("📊 CARGANDO DATOS PARA EL DASHBOARD")
 print("=" * 60)
 
-if not os.path.exists("/app/data/quotes_data.pkl"):
+if not os.path.exists("data/quotes_data.pkl"):
     print("\n❌ ERROR: No se encontró el archivo '/app/data/quotes_data.pkl'")
     print("👉 Por favor, ejecuta primero 'scraping.py' para obtener los datos.")
     print("=" * 60)
     exit()
 
 try:
-    df = pd.read_pickle("/app/data/quotes_data.pkl")
+    df = pd.read_pickle("data/quotes_data.pkl")
     print(f"✓ Cargadas {len(df)} citas correctamente")
 except Exception as e:
     print(f"\n❌ Error al cargar los datos: {e}")
@@ -56,7 +57,7 @@ def anio_a_siglo_romano(anio):
 
 df["siglo_nacimiento"] = df["anio_nacimiento"].apply(anio_a_siglo_romano)
 
-print(f"✓ Datos procesados correctamente")
+print("✓ Datos procesados correctamente")
 print("=" * 60 + "\n")
 
 # ==================== CREAR DASHBOARD ====================
@@ -100,8 +101,9 @@ app.layout = dbc.Container(
                                     id="titulo-principal",
                                 ),
                                 html.P(
-                                    f"Análisis de {len(df)} citas de {df['author']
-                                    .nunique()} autores",
+                                    f"Análisis de {len(df)} citas de {
+                                        df['author'].nunique()
+                                    } autores",
                                     className="text-center mb-4",
                                     id="subtitulo",
                                 ),
