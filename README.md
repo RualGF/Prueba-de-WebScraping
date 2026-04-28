@@ -1,4 +1,4 @@
-# Pipeline de Web Scraping y Procesamiento de Datos
+# Pipeline de Web Scraping de Citas con Dashboard Interactivo
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Pandas](https://img.shields.io/badge/pandas-data-blue.svg)
@@ -21,17 +21,16 @@ Como capa final, se incluye un dashboard interactivo desarrollado con Dash para 
 El flujo de datos sigue la siguiente estructura:
 
 Web origen  
-→ Extracción (BeautifulSoup + Requests)  
+→ Extracción (Requests + BeautifulSoup)  
 → Transformación (Pandas)  
-→ Almacenamiento (CSV / Pickle)  
-→ Consumo de datos  
+→ Almacenamiento (CSV / Pickle / SQLite)  
 → Visualización (Dash)
 
 ### Componentes
 
 - **Extracción**: scraping dinámico navegando entre páginas hasta detectar el final  
 - **Transformación**: limpieza de texto, estructuración y enriquecimiento de datos  
-- **Almacenamiento**: persistencia en CSV (portabilidad) y Pickle (eficiencia interna)  
+- **Almacenamiento**: persistencia en CSV (portabilidad), Pickle (eficiencia interna) y SQLite (Data engineering) 
 - **Consumo**: lectura de datos para análisis y visualización  
 
 ---
@@ -48,7 +47,7 @@ Web origen
 
 ## 🧩 Decisiones técnicas relevantes
 
-### Scraping dinámico
+### Paginación automática
 El proceso de extracción no depende de un número fijo de páginas, sino que detecta automáticamente la existencia de contenido adicional mediante el botón "Next".
 
 ### Transformación de datos
@@ -60,7 +59,8 @@ Se implementa una lógica específica para:
 ### Estrategia de almacenamiento
 Se utiliza un sistema dual:
 - CSV → interoperabilidad y análisis externo  
-- Pickle → preservación de estructuras complejas de Python  
+- Pickle → preservación de estructuras complejas de Python
+- SQLite → almacenamiento estructurado y consulta mediante SQL 
 
 ---
 
@@ -75,7 +75,8 @@ quotes-dashboard/
 ├── README.md                # Este archivo
 │
 ├── quotes_data.pkl         # Datos procesados
-└── quotes_data.csv        
+├── quotes_data.csv
+└── quotes.db        
 ```
 
 
@@ -83,13 +84,16 @@ quotes-dashboard/
 
 ## 🚀 Instalación
 
-git clone https://github.com/RualGF/Prueba-de-WebScraping.git  
-cd Prueba-de-WebScraping  
+`git clone https://github.com/RualGF/Prueba-de-WebScraping.git`
 
-python -m venv .venv  
-.venv/Scripts/activate  
+`cd Prueba-de-WebScraping`
 
-pip install -r requirements.txt  
+
+`python -m venv .venv`
+
+`.venv/Scripts/activate`
+
+`pip install -r requirements.txt`
 
 ---
 
@@ -97,20 +101,42 @@ pip install -r requirements.txt
 
 ### 1. Ejecutar pipeline de scraping
 
-python scraping.py  
+`python scraping.py`
 
-Esto genera:
+Esto genera los datasets procesados en los tres formatos soportados:
 - quotes_data.csv  
 - quotes_data.pkl  
+- quotes.db
 
 ---
 
 ### 2. Ejecutar dashboard
 
-python dashboard.py  
+`python dashboard.py`
 
 Abrir en navegador:
 http://127.0.0.1:8050  
+
+---
+
+## 🐳 Ejecución con Docker
+
+El proyecto incluye una configuración con Docker y Docker Compose para facilitar su ejecución.
+
+Permite ejecutar de forma aislada:
+
+- Servicio de scraping
+- Dashboard de visualización
+
+### Ejecutar con Docker Compose
+*Recuerda abrir Docker primero*
+
+`docker-compose up --build`
+
+El servicio de dashboard se inicia automáticamente una vez finaliza el proceso de scraping.
+
+El dashboard estará disponible en:
+http://localhost:8050
 
 ---
 
@@ -137,7 +163,6 @@ Cada registro contiene:
 
 ## 🧪 Posibles mejoras
 
-- Persistencia en base de datos (SQLite/PostgreSQL)  
 - Automatización del pipeline (scheduler)  
-- Contenerización con Docker  
 - Exposición de datos mediante API
+- Carga incremental de datos (evitar reprocesamiento completo)
